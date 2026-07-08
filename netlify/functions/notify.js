@@ -18,7 +18,7 @@ exports.handler = async function (event) {
   // Liste des destinataires à notifier
   const RECIPIENTS = [
     { Email: 'jessie.harel@akaze.fr', Name: 'Jessie' },
-    { Email: 'veilleakaze@gmail.com', Name: 'veille' },
+    { Email: 'veilleakaze@gmail.com', Name: 'Manon' },
   ];
 
   const MJ_API_KEY = process.env.MAILJET_API_KEY;
