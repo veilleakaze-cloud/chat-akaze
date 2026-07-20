@@ -135,7 +135,6 @@
   const SUPABASE_URL = 'https://uoscqlbrsiifzhsfqgus.supabase.co';
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVvc2NxbGJyc2lpZnpoc2ZxZ3VzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM0MjMwNzMsImV4cCI6MjA5ODk5OTA3M30.VZoGj-uFptEbkA4pQ4P9-1F94sNzJOUsyN4Qpvetr40';
   const PSEUDO_KEY = 'akaze-chat-pseudo';
-  const NOTIFY_URL = '/.netlify/functions/notify';
   const ALLOWED_NAMES = ['Manon', 'Christian', 'Karine', 'Sophie', 'Lydie', 'Albane', 'Bruno', 'Cécile', 'Marina', 'Sylvie', 'Noah', 'Maxime', 'Jessie'];
   let pseudo = null;
   let lastCount = 0;
@@ -171,12 +170,28 @@
     return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length];
   }
 
+  const EMAILJS_SERVICE_ID = 'service_086kol6';
+  const EMAILJS_TEMPLATE_ID = 'template_48rmezr';
+  const EMAILJS_PUBLIC_KEY = 'i_0wlOLF7Of2XTgeE';
+  const EMAIL_RECIPIENTS = [
+    { email: 'jessie.harel@akaze.fr', name: 'Jessie' },
+    { email: 'veilleakaze@gmail.com', name: 'Manon' },
+  ];
+
   function triggerEmailNotification(pseudoSender, text) {
-    fetch(NOTIFY_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ pseudo: pseudoSender, text: text })
-    }).catch(() => {});
+    const toNotify = EMAIL_RECIPIENTS.filter(r => r.name.toLowerCase() !== pseudoSender.toLowerCase());
+    toNotify.forEach(r => {
+      fetch('https://api.emailjs.com/api/v1.0/email/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          service_id: EMAILJS_SERVICE_ID,
+          template_id: EMAILJS_TEMPLATE_ID,
+          user_id: EMAILJS_PUBLIC_KEY,
+          template_params: { pseudo: pseudoSender, message: text, to_email: r.email }
+        })
+      }).catch(() => {});
+    });
   }
 
   async function getStoredMessages() {
